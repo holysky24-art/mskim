@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>문의하기 | GLOW</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --color-cream: #f5f8fc;
+            --color-blush: #e3edf7;
+            --color-rose: #b8d4e8;
+            --color-rose-gold: #4a90b8;
+            --color-burgundy: #1a3a5c;
+            --color-gold: #5bc0be;
+            --color-text: #1a2a3a;
+            --color-text-light: #5a6a7a;
+            --color-white: #ffffff;
+            --shadow-soft: 0 4px 20px rgba(74, 144, 184, 0.12);
+            --shadow-medium: 0 8px 32px rgba(74, 144, 184, 0.18);
+            --border-radius: 20px;
+            --border-radius-sm: 12px;
+            --gradient-rose: linear-gradient(135deg, #e3edf7 0%, #b8d4e8 100%);
+            --gradient-gold: linear-gradient(135deg, #5bc0be 0%, #7dd3d1 50%, #5bc0be 100%);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--color-cream);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            max-width: 430px;
+            margin: 0 auto;
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: 100px;
+        }
+
+        /* 헤더 */
+        .header {
+            background: var(--gradient-rose);
+            padding: 60px 20px 30px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--color-burgundy);
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--color-text-light);
+        }
+
+        /* 메인 컨텐츠 */
+        .main-content {
+            padding: 20px;
+        }
+
+        /* 문의하기 섹션 */
+        .inquiry-section {
+            background: var(--color-white);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 20px;
+        }
+
+        .inquiry-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--color-blush);
+            border-radius: var(--border-radius-sm);
+            font-family: 'Quicksand', sans-serif;
+            font-size: 14px;
+            color: var(--color-text);
+            background: var(--color-white);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--color-rose-gold);
+            box-shadow: 0 0 0 3px rgba(74, 144, 184, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            background: var(--gradient-gold);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .form-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .form-submit:active {
+            transform: translateY(0);
+        }
+
+        /* 문의 내용 확인 페이지 */
+        .inquiry-confirm-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--color-cream);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                        visibility 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow-y: auto;
+            max-width: 430px;
+            margin: 0 auto;
+        }
+
+        .inquiry-confirm-page.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .inquiry-confirm-header {
+            background: var(--gradient-rose);
+            padding: 60px 20px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .inquiry-confirm-back {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-burgundy);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .inquiry-confirm-back svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--color-burgundy);
+            stroke-width: 2;
+        }
+
+        .inquiry-confirm-content {
+            padding: 20px;
+        }
+
+        .inquiry-confirm-section {
+            background: var(--color-white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .inquiry-confirm-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-text-light);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .inquiry-confirm-value {
+            font-size: 16px;
+            color: var(--color-text);
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .success-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .success-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #155724;
+        }
+
+        /* 토스트 메시지 */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--color-white);
+            color: var(--color-text);
+            padding: 14px 24px;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-medium);
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 90%;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--color-gold);
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .toast-message {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 반응형 */
+        @media (min-width: 431px) {
+            body {
+                box-shadow: 0 0 60px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <h1 class="header-title">문의하기</h1>
+        <p class="header-subtitle">궁금한 사항을 문의해주세요</p>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+        <!-- 문의하기 섹션 -->
+        <div class="inquiry-section">
+            <h2 class="section-title">새 문의 작성</h2>
+            <form class="inquiry-form" id="inquiryForm">
+                <div class="form-group">
+                    <label class="form-label" for="inquiryCategory">문의 유형</label>
+                    <select class="form-select" id="inquiryCategory" required>
+                        <option value="">선택해주세요</option>
+                        <option value="product">제품 문의</option>
+                        <option value="order">주문/배송 문의</option>
+                        <option value="exchange">교환/반품 문의</option>
+                        <option value="payment">결제 문의</option>
+                        <option value="other">기타 문의</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="inquiryName">이름</label>
+                    <input type="text" class="form-input" id="inquiryName" placeholder="이름을 입력해주세요" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="inquiryEmail">이메일</label>
+                    <input type="email" class="form-input" id="inquiryEmail" placeholder="이메일을 입력해주세요" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="inquiryTitle">제목</label>
+                    <input type="text" class="form-input" id="inquiryTitle" placeholder="문의 제목을 입력해주세요" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="inquiryContent">내용</label>
+                    <textarea class="form-textarea" id="inquiryContent" placeholder="문의 내용을 입력해주세요" required></textarea>
+                </div>
+                <button type="submit" class="form-submit">문의하기</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- 문의 내용 확인 페이지 -->
+    <div class="inquiry-confirm-page" id="inquiryConfirmPage">
+        <div class="inquiry-confirm-header">
+            <button class="inquiry-confirm-back" id="inquiryConfirmBack">
+                <svg viewBox="0 0 24 24">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+                뒤로가기
+            </button>
+            <h1 class="header-title">문의 내용 확인</h1>
+        </div>
+        <div class="inquiry-confirm-content">
+            <!-- 성공 메시지 -->
+            <div class="success-message">
+                <div class="success-icon">✓</div>
+                <div class="success-text">문의가 성공적으로 제출되었습니다</div>
+            </div>
+
+            <!-- 문의 내용 표시 -->
+            <div class="inquiry-confirm-section">
+                <div class="inquiry-confirm-label">문의 유형</div>
+                <div class="inquiry-confirm-value" id="confirmCategory"></div>
+            </div>
+            <div class="inquiry-confirm-section">
+                <div class="inquiry-confirm-label">이름</div>
+                <div class="inquiry-confirm-value" id="confirmName"></div>
+            </div>
+            <div class="inquiry-confirm-section">
+                <div class="inquiry-confirm-label">이메일</div>
+                <div class="inquiry-confirm-value" id="confirmEmail"></div>
+            </div>
+            <div class="inquiry-confirm-section">
+                <div class="inquiry-confirm-label">제목</div>
+                <div class="inquiry-confirm-value" id="confirmTitle"></div>
+            </div>
+            <div class="inquiry-confirm-section">
+                <div class="inquiry-confirm-label">내용</div>
+                <div class="inquiry-confirm-value" id="confirmContent"></div>
+            </div>
+            <div class="inquiry-confirm-section">
+                <div class="inquiry-confirm-label">작성일</div>
+                <div class="inquiry-confirm-value" id="confirmDate"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스트 메시지 -->
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span class="toast-message" id="toastMessage">문의가 성공적으로 제출되었습니다</span>
+    </div>
+
+    <script>
+        // DOM 요소
+        const inquiryForm = document.getElementById('inquiryForm');
+        const inquiryConfirmPage = document.getElementById('inquiryConfirmPage');
+        const inquiryConfirmBack = document.getElementById('inquiryConfirmBack');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // 문의 유형 매핑
+        const categoryMap = {
+            'product': '제품 문의',
+            'order': '주문/배송 문의',
+            'exchange': '교환/반품 문의',
+            'payment': '결제 문의',
+            'other': '기타 문의'
+        };
+
+        // 문의 내역 가져오기
+        function getInquiries() {
+            const inquiries = JSON.parse(localStorage.getItem('inquiries') || '[]');
+            return inquiries.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        // 문의 내역 저장하기
+        function saveInquiry(inquiry) {
+            const inquiries = getInquiries();
+            inquiry.id = Date.now().toString();
+            inquiry.date = new Date().toISOString();
+            inquiry.status = 'pending';
+            inquiries.push(inquiry);
+            localStorage.setItem('inquiries', JSON.stringify(inquiries));
+            return inquiry;
+        }
+
+        // 날짜 포맷팅
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}.${month}.${day} ${hours}:${minutes}`;
+        }
+
+        // 문의 내용 확인 페이지 표시
+        function showInquiryConfirm(inquiry) {
+            document.getElementById('confirmCategory').textContent = inquiry.category;
+            document.getElementById('confirmName').textContent = inquiry.name;
+            document.getElementById('confirmEmail').textContent = inquiry.email;
+            document.getElementById('confirmTitle').textContent = inquiry.title;
+            document.getElementById('confirmContent').textContent = inquiry.content;
+            document.getElementById('confirmDate').textContent = formatDate(inquiry.date);
+            
+            inquiryConfirmPage.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 문의하기 폼 제출 처리
+        inquiryForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const inquiry = {
+                category: categoryMap[document.getElementById('inquiryCategory').value],
+                categoryValue: document.getElementById('inquiryCategory').value,
+                name: document.getElementById('inquiryName').value,
+                email: document.getElementById('inquiryEmail').value,
+                title: document.getElementById('inquiryTitle').value,
+                content: document.getElementById('inquiryContent').value
+            };
+
+            // 문의 저장
+            const savedInquiry = saveInquiry(inquiry);
+            
+            // 폼 초기화
+            inquiryForm.reset();
+            
+            // 성공 메시지 표시
+            showToast('문의가 성공적으로 제출되었습니다.');
+            
+            // 문의 내용 확인 페이지로 이동
+            setTimeout(() => {
+                showInquiryConfirm(savedInquiry);
+            }, 500);
+        });
+
+        // 문의 내용 확인 페이지 닫기
+        inquiryConfirmBack.addEventListener('click', () => {
+            inquiryConfirmPage.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        // 토스트 메시지 표시 함수
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+
+
+
+
